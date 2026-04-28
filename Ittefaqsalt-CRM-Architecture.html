@@ -1,0 +1,433 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Ittefaqsalt | Zoho CRM Architecture</title>
+    <script src="https://cdn.tailwindcss.com"></script>
+    <link href="https://fonts.googleapis.com/css2?family=Inter:wght@300;400;500;600;700&display=swap" rel="stylesheet">
+    <script src="https://cdn.jsdelivr.net/npm/mermaid/dist/mermaid.min.js"></script>
+    <script src="https://unpkg.com/lucide@latest"></script>
+    <style>
+        body { font-family: 'Inter', sans-serif; background-color: #f8fafc; }
+        .mermaid-container { overflow-x: auto; overflow-y: hidden; background: white; border-radius: 0.75rem; box-shadow: 0 4px 6px -1px rgb(0 0 0 / 0.1); padding: 1.5rem; }
+        /* Custom Scrollbar for the diagram */
+        .mermaid-container::-webkit-scrollbar { height: 8px; }
+        .mermaid-container::-webkit-scrollbar-track { background: #f1f5f9; border-radius: 4px; }
+        .mermaid-container::-webkit-scrollbar-thumb { background: #cbd5e1; border-radius: 4px; }
+        .mermaid-container::-webkit-scrollbar-thumb:hover { background: #94a3b8; }
+        
+        .tab-btn { transition: all 0.2s ease; }
+        .tab-btn.active { background-color: #eff6ff; color: #1d4ed8; border-bottom: 2px solid #1d4ed8; font-weight: 600; }
+        .tab-content { display: none; animation: fadeIn 0.3s ease; }
+        .tab-content.active { display: block; }
+        
+        @keyframes fadeIn {
+            from { opacity: 0; transform: translateY(5px); }
+            to { opacity: 1; transform: translateY(0); }
+        }
+    </style>
+</head>
+<body class="h-screen flex overflow-hidden text-slate-800">
+
+    <!-- Sidebar -->
+    <aside class="w-72 bg-slate-900 text-slate-300 flex flex-col h-full shadow-xl z-10 flex-shrink-0">
+        <div class="p-6 border-b border-slate-700">
+            <h1 class="text-2xl font-bold text-white flex items-center gap-2">
+                <i data-lucide="layers" class="text-blue-400"></i>
+                Ittefaqsalt
+            </h1>
+            <p class="text-sm mt-1 text-slate-400">Zoho CRM Phase 1 Rollout</p>
+            <div class="mt-4 inline-flex items-center gap-1.5 px-2.5 py-1 rounded-full bg-emerald-500/10 text-emerald-400 text-xs font-medium border border-emerald-500/20">
+                <span class="w-1.5 h-1.5 rounded-full bg-emerald-500 animate-pulse"></span>
+                Active Development
+            </div>
+        </div>
+
+        <nav class="flex-1 p-4 space-y-1">
+            <button onclick="switchTab('flowchart')" id="btn-flowchart" class="tab-btn active w-full flex items-center gap-3 px-4 py-3 rounded-lg text-left hover:bg-slate-800 hover:text-white transition-colors">
+                <i data-lucide="git-branch" class="w-5 h-5"></i>
+                Process Flowchart
+            </button>
+            <button onclick="switchTab('stages')" id="btn-stages" class="tab-btn w-full flex items-center gap-3 px-4 py-3 rounded-lg text-left hover:bg-slate-800 hover:text-white transition-colors">
+                <i data-lucide="check-square" class="w-5 h-5"></i>
+                Pipeline Stages
+            </button>
+            <button onclick="switchTab('automations')" id="btn-automations" class="tab-btn w-full flex items-center gap-3 px-4 py-3 rounded-lg text-left hover:bg-slate-800 hover:text-white transition-colors">
+                <i data-lucide="zap" class="w-5 h-5"></i>
+                Rules & Automations
+            </button>
+            <button onclick="switchTab('roles')" id="btn-roles" class="tab-btn w-full flex items-center gap-3 px-4 py-3 rounded-lg text-left hover:bg-slate-800 hover:text-white transition-colors">
+                <i data-lucide="users" class="w-5 h-5"></i>
+                Roles & Access
+            </button>
+        </nav>
+
+        <div class="p-6 bg-slate-800/50 text-xs text-slate-400">
+            <p><i data-lucide="info" class="w-3 h-3 inline mr-1"></i> Future Phases: Inventory, Procurement, Logistics out of scope for Phase 1.</p>
+        </div>
+    </aside>
+
+    <!-- Main Content -->
+    <main class="flex-1 overflow-y-auto bg-slate-50 relative">
+        <!-- Top Navbar -->
+        <header class="bg-white border-b border-slate-200 px-8 py-4 flex justify-between items-center sticky top-0 z-10">
+            <h2 id="page-title" class="text-xl font-semibold text-slate-800">End-to-End Sales Architecture</h2>
+            <div class="flex gap-3">
+                <button class="flex items-center gap-2 px-4 py-2 text-sm font-medium text-slate-600 bg-white border border-slate-300 rounded-lg hover:bg-slate-50 transition">
+                    <i data-lucide="download" class="w-4 h-4"></i> Export PDF
+                </button>
+                <button class="flex items-center gap-2 px-4 py-2 text-sm font-medium text-white bg-blue-600 rounded-lg hover:bg-blue-700 transition shadow-sm">
+                    <i data-lucide="share-2" class="w-4 h-4"></i> Share View
+                </button>
+            </div>
+        </header>
+
+        <div class="p-8 max-w-7xl mx-auto">
+            
+            <!-- FLOWCHART TAB -->
+            <div id="tab-flowchart" class="tab-content active">
+                <div class="mb-6 flex justify-between items-end">
+                    <div>
+                        <h3 class="text-lg font-semibold mb-1">New Sales Blueprint Flow</h3>
+                        <p class="text-sm text-slate-500">Visual mapping of Lead Capture, Regional Routing, Approvals, and the 6-Stage Deal Pipeline.</p>
+                    </div>
+                    <div class="flex gap-4 text-xs font-medium">
+                        <span class="flex items-center gap-1"><div class="w-3 h-3 rounded bg-blue-100 border border-blue-400"></div> System Action</span>
+                        <span class="flex items-center gap-1"><div class="w-3 h-3 rounded bg-yellow-100 border border-yellow-500"></div> Pipeline Stage</span>
+                        <span class="flex items-center gap-1"><div class="w-3 h-3 rounded bg-purple-100 border border-purple-400"></div> Automation</span>
+                        <span class="flex items-center gap-1"><div class="w-3 h-3 rounded bg-pink-100 border border-pink-400"></div> Decision / Approval</span>
+                    </div>
+                </div>
+
+                <div class="mermaid-container w-full">
+                    <div class="mermaid">
+                        %%{init: {'theme': 'base', 'themeVariables': { 'primaryColor': '#ffffff', 'edgeLabelBackground':'#ffffff', 'fontFamily': 'Inter'}}}%%
+                        graph TD
+                            classDef sys fill:#eff6ff,stroke:#3b82f6,stroke-width:2px,color:#1e40af,rx:8px,ry:8px;
+                            classDef stage fill:#fef9c3,stroke:#eab308,stroke-width:2px,color:#854d0e,rx:8px,ry:8px;
+                            classDef action fill:#ffffff,stroke:#cbd5e1,stroke-width:2px,color:#334155,rx:4px,ry:4px;
+                            classDef decision fill:#fdf2f8,stroke:#ec4899,stroke-width:2px,color:#be185d,rx:16px,ry:16px;
+                            classDef reject fill:#fef2f2,stroke:#ef4444,stroke-width:2px,color:#991b1b,rx:8px,ry:8px;
+                            classDef auto fill:#faf5ff,stroke:#a855f7,stroke-width:2px,color:#6b21a8,rx:8px,ry:8px;
+                            classDef doc fill:#f0fdf4,stroke:#22c55e,stroke-width:2px,color:#166534,rx:8px,ry:8px;
+
+                            Start((Lead<br/>Sources)):::action --> WebForm[Web Form<br/>90% Organic]:::sys
+                            Start --> Emails[Direct Emails<br/>& Referrals]:::sys
+
+                            WebForm & Emails --> Filter{Spam or<br/>Non-Potential?}:::decision
+
+                            Filter -- Yes --> Unqual[Mark Unqualified<br/>Mandatory Reason]:::reject
+                            Unqual --> MonthEnd[Retain for Month-End<br/>Reporting Metrics]:::auto
+
+                            Filter -- No --> Routing{Admin Assigns<br/>by Region}:::decision
+
+                            Routing -- Asia --> Sales01[Asia Team<br/>Alias: Sales01]:::sys
+                            Routing -- Europe --> Sales02[Europe Team<br/>Alias: Sales02]:::sys
+                            Routing -- USA --> Sales03[USA Team<br/>Alias: Sales03]:::sys
+
+                            Sales01 & Sales02 & Sales03 --> DealCreation[Deal Record Created]:::action
+                            
+                            DealCreation -. Auto-Triggers .-> Tasks[Task 1: Initial Contact<br/>Task 2: Follow-up<br/>Task 3: Send Quote]:::auto
+                            
+                            DealCreation --> S1[STAGE 1: Qualification]:::stage
+                            S1 --> QCheck{Is Lead<br/>Qualified?}:::decision
+                            QCheck -- No --> Unqual
+                            QCheck -- Yes --> S2[STAGE 2: Introduction]:::stage
+
+                            S2 --> DraftIntro[Jr. Staff Drafts<br/>Intro Email]:::action
+                            DraftIntro --> MgrApp1{Manager<br/>Approval?}:::decision
+                            MgrApp1 -- Reject w/ Comments --> DraftIntro
+                            MgrApp1 -- Approve --> SendIntro[System Sends Email<br/>Appends Personal Signature]:::auto
+
+                            SendIntro --> Wait1[Wait 18-24 Hours]:::auto
+                            Wait1 --> Reply1{Client<br/>Replied?}:::decision
+
+                            Reply1 -- No --> AutoFup[Auto Follow-up<br/>w/ Link to Original Email]:::auto
+                            AutoFup --> Wait2[Wait 18-24 Hours]:::auto
+                            Wait2 --> Reply2{Client<br/>Replied?}:::decision
+                            Reply2 -- No --> ManualInt[Task: Manual Intervention<br/>WhatsApp/Call]:::action
+                            
+                            Reply1 -- Yes --> S3
+                            Reply2 -- Yes --> S3
+                            ManualInt --> S3
+
+                            S3[STAGE 3: Quotation Sent]:::stage
+                            S3 --> Samples[Manage Samples<br/>Req/Sent/Received/Pics]:::action
+                            Samples --> DraftQuote[Draft Standard Quotation<br/>Modify Legacy Pricing]:::doc
+                            DraftQuote --> MgrApp2{Manager<br/>Approval?}:::decision
+                            MgrApp2 -- Reject --> DraftQuote
+                            MgrApp2 -- Approve --> SendQuote[Send Quotation to Client]:::auto
+
+                            SendQuote --> S4[STAGE 4: Quotation Accepted]:::stage
+                            S4 --> PO[Receive PO &<br/>Attach to Deal]:::doc
+                            PO --> GenPI[Generate Proforma Invoice<br/>Specs & Bank Details]:::doc
+                            GenPI --> SignPI[Track Physically Signed PI]:::action
+                            
+                            SignPI --> S5[STAGE 5: Order Acceptance]:::stage
+                            S5 --> PayCheck[Record Payment Method<br/>Deposit / Credit]:::action
+
+                            PayCheck --> S6[STAGE 6: Order Instructions]:::stage
+                            S6 --> CollectAssets[Collect & Attach Docs:<br/>Bag Labels, Artwork, Price Sheet]:::doc
+
+                            CollectAssets --> Won(((DEAL WON))):::sys
+                    </div>
+                </div>
+            </div>
+
+            <!-- STAGES TAB -->
+            <div id="tab-stages" class="tab-content">
+                <div class="mb-6">
+                    <h3 class="text-lg font-semibold mb-1">Pipeline Stages & Stage-Gate Checks</h3>
+                    <p class="text-sm text-slate-500">Strict stage-gate requirements mapped exactly to the documentation.</p>
+                </div>
+
+                <div class="space-y-6">
+                    <!-- Stage 1 -->
+                    <div class="bg-white border border-slate-200 rounded-xl overflow-hidden shadow-sm">
+                        <div class="bg-slate-50 border-b border-slate-200 px-5 py-3">
+                            <h4 class="font-bold text-slate-800 flex items-center gap-2"><span class="bg-yellow-100 text-yellow-700 px-2 py-0.5 rounded text-xs font-black">Stage 1</span> Qualification</h4>
+                        </div>
+                        <table class="w-full text-sm text-left">
+                            <thead class="bg-slate-50 text-slate-500 border-b border-slate-200">
+                                <tr><th class="px-5 py-2 font-semibold">Field</th><th class="px-5 py-2 font-semibold">Type</th><th class="px-5 py-2 font-semibold">Required</th></tr>
+                            </thead>
+                            <tbody class="divide-y divide-slate-100">
+                                <tr><td class="px-5 py-2.5">Qualified</td><td class="px-5 py-2.5 text-slate-600">Yes / No</td><td class="px-5 py-2.5"><span class="text-red-600 font-medium bg-red-50 px-2 py-0.5 rounded">Yes</span></td></tr>
+                                <tr><td class="px-5 py-2.5">Unqualified Reason</td><td class="px-5 py-2.5 text-slate-600">Fake / Non-Potential</td><td class="px-5 py-2.5"><span class="text-amber-600 font-medium bg-amber-50 px-2 py-0.5 rounded">Conditional (if No)</span></td></tr>
+                            </tbody>
+                        </table>
+                    </div>
+
+                    <!-- Stage 2 -->
+                    <div class="bg-white border border-slate-200 rounded-xl overflow-hidden shadow-sm">
+                        <div class="bg-slate-50 border-b border-slate-200 px-5 py-3">
+                            <h4 class="font-bold text-slate-800 flex items-center gap-2"><span class="bg-yellow-100 text-yellow-700 px-2 py-0.5 rounded text-xs font-black">Stage 2</span> Introduction</h4>
+                        </div>
+                        <table class="w-full text-sm text-left">
+                            <thead class="bg-slate-50 text-slate-500 border-b border-slate-200">
+                                <tr><th class="px-5 py-2 font-semibold">Field / Action</th><th class="px-5 py-2 font-semibold">Type</th><th class="px-5 py-2 font-semibold">Required</th></tr>
+                            </thead>
+                            <tbody class="divide-y divide-slate-100">
+                                <tr><td class="px-5 py-2.5">Email draft reviewed by regional manager</td><td class="px-5 py-2.5 text-slate-600">Pop-up notification + Yes / No confirmation</td><td class="px-5 py-2.5"><span class="text-red-600 font-medium bg-red-50 px-2 py-0.5 rounded">Yes</span></td></tr>
+                                <tr><td class="px-5 py-2.5">Auto-reminder to manager to check draft</td><td class="px-5 py-2.5 text-slate-600">Automated trigger</td><td class="px-5 py-2.5"><span class="text-red-600 font-medium bg-red-50 px-2 py-0.5 rounded">Yes</span></td></tr>
+                                <tr><td class="px-5 py-2.5">18-hour follow-up loop (no client response)</td><td class="px-5 py-2.5 text-slate-600">Automated email with link to original email</td><td class="px-5 py-2.5"><span class="text-red-600 font-medium bg-red-50 px-2 py-0.5 rounded">Yes</span></td></tr>
+                                <tr><td class="px-5 py-2.5">Second follow-up → no response → manual intervention prompt</td><td class="px-5 py-2.5 text-slate-600">Task / notification</td><td class="px-5 py-2.5"><span class="text-red-600 font-medium bg-red-50 px-2 py-0.5 rounded">Yes</span></td></tr>
+                            </tbody>
+                        </table>
+                    </div>
+
+                    <!-- Stage 3 -->
+                    <div class="bg-white border border-slate-200 rounded-xl overflow-hidden shadow-sm">
+                        <div class="bg-slate-50 border-b border-slate-200 px-5 py-3">
+                            <h4 class="font-bold text-slate-800 flex items-center gap-2"><span class="bg-yellow-100 text-yellow-700 px-2 py-0.5 rounded text-xs font-black">Stage 3</span> Quotation Sent</h4>
+                        </div>
+                        <table class="w-full text-sm text-left">
+                            <thead class="bg-slate-50 text-slate-500 border-b border-slate-200">
+                                <tr>
+                                    <th class="px-5 py-2 font-semibold w-12">#</th>
+                                    <th class="px-5 py-2 font-semibold">Field</th>
+                                    <th class="px-5 py-2 font-semibold">Type</th>
+                                    <th class="px-5 py-2 font-semibold">Required</th>
+                                </tr>
+                            </thead>
+                            <tbody class="divide-y divide-slate-100">
+                                <tr><td class="px-5 py-2.5 text-slate-400">1</td><td class="px-5 py-2.5">Sample Required</td><td class="px-5 py-2.5 text-slate-600">Yes / No / NA</td><td class="px-5 py-2.5"><span class="text-red-600 font-medium bg-red-50 px-2 py-0.5 rounded">Yes</span></td></tr>
+                                <tr><td class="px-5 py-2.5 text-slate-400">2</td><td class="px-5 py-2.5">Sample Sent</td><td class="px-5 py-2.5 text-slate-600">Yes / No / NA</td><td class="px-5 py-2.5"><span class="text-red-600 font-medium bg-red-50 px-2 py-0.5 rounded">Yes</span></td></tr>
+                                <tr><td class="px-5 py-2.5 text-slate-400">3</td><td class="px-5 py-2.5">Sample Sent Date</td><td class="px-5 py-2.5 text-slate-600">Date</td><td class="px-5 py-2.5"><span class="text-amber-600 font-medium bg-amber-50 px-2 py-0.5 rounded">Conditional</span></td></tr>
+                                <tr><td class="px-5 py-2.5 text-slate-400">4</td><td class="px-5 py-2.5">Sample Due Date</td><td class="px-5 py-2.5 text-slate-600">Date</td><td class="px-5 py-2.5"><span class="text-amber-600 font-medium bg-amber-50 px-2 py-0.5 rounded">Conditional</span></td></tr>
+                                <tr><td class="px-5 py-2.5 text-slate-400">5</td><td class="px-5 py-2.5">Customer Sample Received</td><td class="px-5 py-2.5 text-slate-600">Yes / No / NA</td><td class="px-5 py-2.5"><span class="text-red-600 font-medium bg-red-50 px-2 py-0.5 rounded">Yes</span></td></tr>
+                                <tr><td class="px-5 py-2.5 text-slate-400">6</td><td class="px-5 py-2.5">Sample Pictures Attached</td><td class="px-5 py-2.5 text-slate-600">Yes / No / NA</td><td class="px-5 py-2.5"><span class="text-red-600 font-medium bg-red-50 px-2 py-0.5 rounded">Yes</span></td></tr>
+                                <tr><td class="px-5 py-2.5 text-slate-400">7</td><td class="px-5 py-2.5">Quotation Sent</td><td class="px-5 py-2.5 text-slate-600">Yes / No</td><td class="px-5 py-2.5"><span class="text-red-600 font-medium bg-red-50 px-2 py-0.5 rounded">Yes</span></td></tr>
+                                <tr><td class="px-5 py-2.5 text-slate-400">8</td><td class="px-5 py-2.5">Quotation Sent Date</td><td class="px-5 py-2.5 text-slate-600">Date</td><td class="px-5 py-2.5"><span class="text-red-600 font-medium bg-red-50 px-2 py-0.5 rounded">Yes</span></td></tr>
+                                <tr><td class="px-5 py-2.5 text-slate-400">9</td><td class="px-5 py-2.5">Revised Quotation</td><td class="px-5 py-2.5 text-slate-600">Yes / No / NA</td><td class="px-5 py-2.5"><span class="text-red-600 font-medium bg-red-50 px-2 py-0.5 rounded">Yes</span></td></tr>
+                                <tr><td class="px-5 py-2.5 text-slate-400">10</td><td class="px-5 py-2.5">Quotation Acceptance Date</td><td class="px-5 py-2.5 text-slate-600">Date</td><td class="px-5 py-2.5"><span class="text-amber-600 font-medium bg-amber-50 px-2 py-0.5 rounded">Conditional</span></td></tr>
+                                <tr><td class="px-5 py-2.5 text-slate-400">11</td><td class="px-5 py-2.5">Standard Quotation Draft Template</td><td class="px-5 py-2.5 text-slate-600">Fillable template (prices editable) — sent as email attachment</td><td class="px-5 py-2.5"><span class="text-red-600 font-medium bg-red-50 px-2 py-0.5 rounded">Yes</span></td></tr>
+                            </tbody>
+                        </table>
+                    </div>
+
+                    <!-- Stage 4 -->
+                    <div class="bg-white border border-slate-200 rounded-xl overflow-hidden shadow-sm">
+                        <div class="bg-slate-50 border-b border-slate-200 px-5 py-3">
+                            <h4 class="font-bold text-slate-800 flex items-center gap-2"><span class="bg-yellow-100 text-yellow-700 px-2 py-0.5 rounded text-xs font-black">Stage 4</span> Quotation Accepted</h4>
+                        </div>
+                        <table class="w-full text-sm text-left">
+                            <thead class="bg-slate-50 text-slate-500 border-b border-slate-200">
+                                <tr><th class="px-5 py-2 font-semibold w-12">#</th><th class="px-5 py-2 font-semibold">Field</th><th class="px-5 py-2 font-semibold">Type</th><th class="px-5 py-2 font-semibold">Required</th></tr>
+                            </thead>
+                            <tbody class="divide-y divide-slate-100">
+                                <tr><td class="px-5 py-2.5 text-slate-400">1</td><td class="px-5 py-2.5">PO Received</td><td class="px-5 py-2.5 text-slate-600">Yes / No</td><td class="px-5 py-2.5"><span class="text-red-600 font-medium bg-red-50 px-2 py-0.5 rounded">Yes</span></td></tr>
+                                <tr><td class="px-5 py-2.5 text-slate-400">2</td><td class="px-5 py-2.5">Proforma Signed Acceptance Date</td><td class="px-5 py-2.5 text-slate-600">Date</td><td class="px-5 py-2.5"><span class="text-red-600 font-medium bg-red-50 px-2 py-0.5 rounded">Yes</span></td></tr>
+                                <tr><td class="px-5 py-2.5 text-slate-400">3</td><td class="px-5 py-2.5">Proforma Invoice Sent</td><td class="px-5 py-2.5 text-slate-600">Yes / No</td><td class="px-5 py-2.5"><span class="text-red-600 font-medium bg-red-50 px-2 py-0.5 rounded">Yes</span></td></tr>
+                                <tr><td class="px-5 py-2.5 text-slate-400">4</td><td class="px-5 py-2.5">Invoice Due Date</td><td class="px-5 py-2.5 text-slate-600">Date</td><td class="px-5 py-2.5"><span class="text-red-600 font-medium bg-red-50 px-2 py-0.5 rounded">Yes</span></td></tr>
+                                <tr><td class="px-5 py-2.5 text-slate-400">5</td><td class="px-5 py-2.5">PO Attachment</td><td class="px-5 py-2.5 text-slate-600">File Attachment</td><td class="px-5 py-2.5"><span class="text-red-600 font-medium bg-red-50 px-2 py-0.5 rounded">Yes</span></td></tr>
+                            </tbody>
+                        </table>
+                    </div>
+
+                    <!-- Stage 5 -->
+                    <div class="bg-white border border-slate-200 rounded-xl overflow-hidden shadow-sm">
+                        <div class="bg-slate-50 border-b border-slate-200 px-5 py-3">
+                            <h4 class="font-bold text-slate-800 flex items-center gap-2"><span class="bg-yellow-100 text-yellow-700 px-2 py-0.5 rounded text-xs font-black">Stage 5</span> Order Acceptance</h4>
+                        </div>
+                        <table class="w-full text-sm text-left">
+                            <thead class="bg-slate-50 text-slate-500 border-b border-slate-200">
+                                <tr><th class="px-5 py-2 font-semibold w-12">#</th><th class="px-5 py-2 font-semibold">Field</th><th class="px-5 py-2 font-semibold">Type</th><th class="px-5 py-2 font-semibold">Required</th></tr>
+                            </thead>
+                            <tbody class="divide-y divide-slate-100">
+                                <tr><td class="px-5 py-2.5 text-slate-400">1</td><td class="px-5 py-2.5">Payment Method</td><td class="px-5 py-2.5 text-slate-600">Deposit / Credit</td><td class="px-5 py-2.5"><span class="text-red-600 font-medium bg-red-50 px-2 py-0.5 rounded">Yes</span></td></tr>
+                                <tr><td class="px-5 py-2.5 text-slate-400">2</td><td class="px-5 py-2.5">Notes</td><td class="px-5 py-2.5 text-slate-600">Text Field</td><td class="px-5 py-2.5"><span class="text-red-600 font-medium bg-red-50 px-2 py-0.5 rounded">Yes</span></td></tr>
+                            </tbody>
+                        </table>
+                    </div>
+
+                    <!-- Stage 6 -->
+                    <div class="bg-white border border-slate-200 rounded-xl overflow-hidden shadow-sm">
+                        <div class="bg-slate-50 border-b border-slate-200 px-5 py-3">
+                            <h4 class="font-bold text-slate-800 flex items-center gap-2"><span class="bg-yellow-100 text-yellow-700 px-2 py-0.5 rounded text-xs font-black">Stage 6</span> Order Instructions</h4>
+                        </div>
+                        <table class="w-full text-sm text-left">
+                            <thead class="bg-slate-50 text-slate-500 border-b border-slate-200">
+                                <tr><th class="px-5 py-2 font-semibold w-12">#</th><th class="px-5 py-2 font-semibold">Field</th><th class="px-5 py-2 font-semibold">Type</th><th class="px-5 py-2 font-semibold">Required</th></tr>
+                            </thead>
+                            <tbody class="divide-y divide-slate-100">
+                                <tr><td class="px-5 py-2.5 text-slate-400">1</td><td class="px-5 py-2.5">Bag Labels</td><td class="px-5 py-2.5 text-slate-600">File Attachment</td><td class="px-5 py-2.5"><span class="text-red-600 font-medium bg-red-50 px-2 py-0.5 rounded">Yes</span></td></tr>
+                                <tr><td class="px-5 py-2.5 text-slate-400">2</td><td class="px-5 py-2.5">Artwork Files for Private Label</td><td class="px-5 py-2.5 text-slate-600">File Attachment</td><td class="px-5 py-2.5"><span class="text-red-600 font-medium bg-red-50 px-2 py-0.5 rounded">Yes</span></td></tr>
+                                <tr><td class="px-5 py-2.5 text-slate-400">3</td><td class="px-5 py-2.5">Any Other Instructions</td><td class="px-5 py-2.5 text-slate-600">Text Field</td><td class="px-5 py-2.5"><span class="text-red-600 font-medium bg-red-50 px-2 py-0.5 rounded">Yes</span></td></tr>
+                                <tr><td class="px-5 py-2.5 text-slate-400">4</td><td class="px-5 py-2.5">Price Sheet</td><td class="px-5 py-2.5 text-slate-600">File Attachment</td><td class="px-5 py-2.5"><span class="text-red-600 font-medium bg-red-50 px-2 py-0.5 rounded">Yes</span></td></tr>
+                            </tbody>
+                        </table>
+                    </div>
+
+                </div>
+            </div>
+
+            <!-- AUTOMATIONS TAB -->
+            <div id="tab-automations" class="tab-content">
+                 <div class="mb-6">
+                    <h3 class="text-lg font-semibold mb-1">Deluge & Workflow Automations</h3>
+                    <p class="text-sm text-slate-500">Custom scripting and standard workflows enforcing business logic.</p>
+                </div>
+
+                <div class="grid grid-cols-2 gap-6">
+                    <div class="bg-white p-6 rounded-xl border border-slate-200 shadow-sm relative overflow-hidden">
+                        <div class="absolute top-0 right-0 p-4 opacity-10 text-purple-600"><i data-lucide="mail-warning" class="w-24 h-24"></i></div>
+                        <div class="w-10 h-10 bg-purple-100 text-purple-600 rounded-lg flex items-center justify-center mb-4">
+                            <i data-lucide="clock" class="w-5 h-5"></i>
+                        </div>
+                        <h4 class="font-bold text-slate-800 mb-2">18-Hour Follow-Up Loop</h4>
+                        <p class="text-sm text-slate-600 mb-4">If a client doesn't respond to the Intro Email within 18-24 hours, the CRM automatically fires a follow-up. Crucially, Deluge script attaches a reference/link to the original email in case it went to Spam.</p>
+                        <div class="bg-slate-50 rounded p-3 text-xs font-mono text-slate-500 border border-slate-100">
+                            Failure Path: 2nd Auto-email -> No Reply -> Trigger manual WhatsApp Task.
+                        </div>
+                    </div>
+
+                    <div class="bg-white p-6 rounded-xl border border-slate-200 shadow-sm relative overflow-hidden">
+                        <div class="absolute top-0 right-0 p-4 opacity-10 text-emerald-600"><i data-lucide="pen-tool" class="w-24 h-24"></i></div>
+                        <div class="w-10 h-10 bg-emerald-100 text-emerald-600 rounded-lg flex items-center justify-center mb-4">
+                            <i data-lucide="fingerprint" class="w-5 h-5"></i>
+                        </div>
+                        <h4 class="font-bold text-slate-800 mb-2">Dynamic Signature Mapping</h4>
+                        <p class="text-sm text-slate-600 mb-4">Sales reps use shared regional aliases (e.g., Sales02 for Europe). To maintain personal relationships, CRM automatically maps and appends the logged-in user's personal signature to outbound emails.</p>
+                    </div>
+
+                    <div class="bg-white p-6 rounded-xl border border-slate-200 shadow-sm relative overflow-hidden">
+                        <div class="absolute top-0 right-0 p-4 opacity-10 text-blue-600"><i data-lucide="shield-check" class="w-24 h-24"></i></div>
+                        <div class="w-10 h-10 bg-blue-100 text-blue-600 rounded-lg flex items-center justify-center mb-4">
+                            <i data-lucide="message-square" class="w-5 h-5"></i>
+                        </div>
+                        <h4 class="font-bold text-slate-800 mb-2">In-App Approval Workflows</h4>
+                        <p class="text-sm text-slate-600 mb-4">Replacing legacy WhatsApp approvals. When Jr. Staff drafts emails/PIs, status changes to "Pending Approval". Managers receive a CRM pop-up, allowing inline edits/comments before release.</p>
+                    </div>
+
+                    <div class="bg-white p-6 rounded-xl border border-slate-200 shadow-sm relative overflow-hidden">
+                        <div class="absolute top-0 right-0 p-4 opacity-10 text-amber-600"><i data-lucide="database" class="w-24 h-24"></i></div>
+                        <div class="w-10 h-10 bg-amber-100 text-amber-600 rounded-lg flex items-center justify-center mb-4">
+                            <i data-lucide="refresh-cw" class="w-5 h-5"></i>
+                        </div>
+                        <h4 class="font-bold text-slate-800 mb-2">Real-Time Data Sync</h4>
+                        <p class="text-sm text-slate-600 mb-4">Two-way real-time Outlook sync across all accounts. Migration of historical PST data ensures incoming emails from legacy clients instantly display full historical context.</p>
+                    </div>
+                </div>
+            </div>
+
+            <!-- ROLES TAB -->
+            <div id="tab-roles" class="tab-content">
+                <div class="mb-6">
+                    <h3 class="text-lg font-semibold mb-1">Security & Access Hierarchy</h3>
+                    <p class="text-sm text-slate-500">Strict regional isolation utilizing Zoho Roles and Data Sharing rules.</p>
+                </div>
+
+                <div class="bg-white border border-slate-200 rounded-xl overflow-hidden shadow-sm">
+                    <table class="w-full text-left">
+                        <thead class="bg-slate-50 border-b border-slate-200 text-slate-600">
+                            <tr>
+                                <th class="p-4 font-semibold w-1/4">Role Designation</th>
+                                <th class="p-4 font-semibold w-1/4">Data Visibility</th>
+                                <th class="p-4 font-semibold w-1/2">Key Capabilities & Restrictions</th>
+                            </tr>
+                        </thead>
+                        <tbody class="divide-y divide-slate-100">
+                            <tr>
+                                <td class="p-4"><div class="flex items-center gap-2 font-bold text-slate-800"><i data-lucide="crown" class="w-4 h-4 text-yellow-500"></i> Super Admin</div><span class="text-xs text-slate-500 block mt-1">Sales Manager</span></td>
+                                <td class="p-4"><span class="bg-blue-100 text-blue-700 px-2 py-1 rounded text-xs font-semibold">Global (All Regions)</span></td>
+                                <td class="p-4 text-sm text-slate-600">Full pipeline visibility. Access to cross-region dashboards (stalled leads, month-end Fake/Spam vs Potential metric reporting). Can manually route unassigned leads.</td>
+                            </tr>
+                            <tr>
+                                <td class="p-4"><div class="flex items-center gap-2 font-bold text-slate-800"><i data-lucide="user-check" class="w-4 h-4 text-emerald-500"></i> Regional Head</div></td>
+                                <td class="p-4"><span class="bg-emerald-100 text-emerald-700 px-2 py-1 rounded text-xs font-semibold">Own Region Only</span></td>
+                                <td class="p-4 text-sm text-slate-600">Strict regional isolation. Reviews and approves/rejects Junior Staff drafts via CRM pop-ups. Manages team performance and task completion tracking.</td>
+                            </tr>
+                            <tr>
+                                <td class="p-4"><div class="flex items-center gap-2 font-bold text-slate-800"><i data-lucide="user" class="w-4 h-4 text-slate-500"></i> Sales Team</div></td>
+                                <td class="p-4"><span class="bg-slate-100 text-slate-700 px-2 py-1 rounded text-xs font-semibold">Assigned Deals Only</span></td>
+                                <td class="p-4 text-sm text-slate-600">Manages specific assigned leads/deals. Sends emails via shared Alias with mapped signatures. Executes auto-generated Tasks (Contact, Follow-up, Quote).</td>
+                            </tr>
+                            <tr>
+                                <td class="p-4"><div class="flex items-center gap-2 font-bold text-slate-800"><i data-lucide="user-minus" class="w-4 h-4 text-slate-400"></i> Junior Staff</div></td>
+                                <td class="p-4"><span class="bg-slate-100 text-slate-700 px-2 py-1 rounded text-xs font-semibold">Assigned Deals Only</span></td>
+                                <td class="p-4 text-sm text-slate-600">Restricted sending rights. Can draft Introduction Emails and Proforma Invoices (PIs), but must submit for Manager Approval before external transmission.</td>
+                            </tr>
+                        </tbody>
+                    </table>
+                </div>
+            </div>
+
+        </div>
+    </main>
+
+    <script>
+        // Initialize Lucide icons
+        lucide.createIcons();
+        
+        // Initialize Mermaid
+        mermaid.initialize({ startOnLoad: true });
+
+        // Tab Switching Logic
+        function switchTab(tabId) {
+            // Remove active from all tabs/buttons
+            document.querySelectorAll('.tab-content').forEach(el => el.classList.remove('active'));
+            document.querySelectorAll('.tab-btn').forEach(el => {
+                el.classList.remove('active');
+                el.classList.remove('bg-slate-800');
+                el.classList.remove('text-white');
+            });
+            
+            // Add active to selected
+            document.getElementById(`tab-${tabId}`).classList.add('active');
+            const btn = document.getElementById(`btn-${tabId}`);
+            btn.classList.add('active');
+            
+            // Update Title
+            const titles = {
+                'flowchart': 'End-to-End Sales Architecture',
+                'stages': 'Pipeline Stage-Gate Checks',
+                'automations': 'Automations & Deluge Workflows',
+                'roles': 'Security & Role Hierarchy'
+            };
+            document.getElementById('page-title').innerText = titles[tabId];
+        }
+    </script>
+</body>
+</html>
